@@ -14,11 +14,11 @@
                 <p class="text-muted small mb-0">Search certified clinicians across Cardiology, Endocrinology, Internal Medicine, and Orthopedics.</p>
             </div>
             <div class="col-lg-6">
-                <form method="get" class="d-flex gap-2">
-                    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by doctor name, specialty, degree...">
-                    <button type="submit" class="btn btn-primary px-4"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                <form method="get" class="d-flex flex-wrap gap-2">
+                    <input type="text" name="q" value="{{ query }}" class="form-control flex-grow-1" style="min-width: 180px;" placeholder="Search doctor, specialty, degree...">
+                    <button type="submit" class="btn btn-primary px-3 flex-grow-1 flex-sm-grow-0"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
                     {% if query or specialty_filter %}
-                        <a href="{% url 'appointments:doctor_directory' %}" class="btn btn-outline-secondary">Reset</a>
+                        <a href="{% url 'appointments:doctor_directory' %}" class="btn btn-outline-secondary flex-grow-1 flex-sm-grow-0">Reset</a>
                     {% endif %}
                 </form>
             </div>

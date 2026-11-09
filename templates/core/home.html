@@ -17,11 +17,11 @@
             <p class="lead text-muted mb-4 fs-5">
                 Connect with verified medical specialists, securely manage your diagnostic lab reports with role-based encryption, and receive instant, evidence-backed preliminary risk assessments for <b>Diabetes</b> and <b>Heart Disease</b>.
             </p>
-            <div class="d-flex flex-wrap gap-3">
-                <a href="{% url 'appointments:doctor_directory' %}" class="btn btn-primary btn-lg px-4 shadow-sm">
+            <div class="d-flex flex-wrap gap-3 btn-hero-group">
+                <a href="{% url 'appointments:doctor_directory' %}" class="btn btn-primary btn-lg px-4 shadow-sm flex-grow-1">
                     <i class="fa-solid fa-calendar-check me-2"></i> Book Appointment
                 </a>
-                <a href="{% url 'prediction:hub' %}" class="btn btn-outline-primary btn-lg px-4">
+                <a href="{% url 'prediction:hub' %}" class="btn btn-outline-primary btn-lg px-4 flex-grow-1">
                     <i class="fa-solid fa-brain me-2"></i> Take AI Risk Screener
                 </a>
             </div>
