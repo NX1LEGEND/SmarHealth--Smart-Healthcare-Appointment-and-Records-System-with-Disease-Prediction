@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Heart Disease Risk Assessment | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm border-0 p-4">
+                <div class="text-center mb-4">
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary mx-auto mb-2" style="width: 56px; height: 56px;">
+                        <i class="fa-solid fa-heart-pulse fs-3"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark">Cardiovascular Heart Disease Screener</h3>
+                    <p class="text-muted small">
+                        Input 13 clinical cardiac indicators to assess coronary artery and ischemic heart disease risk
+                        {% if patient and patient != user %}
+                            for <b>{{ patient.get_full_name_or_username }}</b>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Interactive Demo Fill Buttons -->
+                <div class="card bg-light border p-3 mb-4 rounded-3">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <span class="small fw-bold text-dark">
+                            <i class="fa-solid fa-wand-magic-sparkles text-primary me-1"></i> Quick Test Profiles:
+                        </span>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="fillHeartProfile('healthy')">
+                                <i class="fa-solid fa-heart-circle-check me-1"></i> Normal Cardiac Vitals (Low Risk)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="fillHeartProfile('high_risk')">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i> Elevated Risk Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" id="heartForm">
+                    {% csrf_token %}
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Patient Age (Years) *</label>
+                            {{ form.age }}
+                            {{ form.age.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Sex *</label>
+                            {{ form.sex }}
+                            {{ form.sex.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Chest Pain (CP) Classification *</label>
+                            {{ form.cp }}
+                            <small class="text-muted">{{ form.cp.help_text }}</small>
+                            {{ form.cp.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Resting Blood Pressure (mm Hg) *</label>
+                            {{ form.trestbps }}
+                            <small class="text-muted">{{ form.trestbps.help_text }}</small>
+                            {{ form.trestbps.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Serum Cholesterol (mg/dL) *</label>
+                            {{ form.chol }}
+                            <small class="text-muted">{{ form.chol.help_text }}</small>
+                            {{ form.chol.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Fasting Blood Sugar > 120 mg/dL *</label>
+                            {{ form.fbs }}
+                            {{ form.fbs.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Resting Electrocardiogram (ECG) *</label>
+                            {{ form.restecg }}
+                            {{ form.restecg.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Maximum Heart Rate (thalach bpm) *</label>
+                            {{ form.thalach }}
+                            <small class="text-muted">{{ form.thalach.help_text }}</small>
+                            {{ form.thalach.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Exercise Induced Angina *</label>
+                            {{ form.exang }}
+                            <small class="text-muted">{{ form.exang.help_text }}</small>
+                            {{ form.exang.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">ST Depression (oldpeak mm) *</label>
+                            {{ form.oldpeak }}
+                            <small class="text-muted">{{ form.oldpeak.help_text }}</small>
+                            {{ form.oldpeak.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Slope of Peak ST Segment *</label>
+                            {{ form.slope }}
+                            {{ form.slope.errors }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Major Fluoroscopy Vessels *</label>
+                            {{ form.ca }}
+                            {{ form.ca.errors }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Thalassemia Status *</label>
+                            {{ form.thal }}
+                            {{ form.thal.errors }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'prediction:hub' %}" class="btn btn-outline-secondary">Back to Hub</a>
+                        <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm">
+                            <i class="fa-solid fa-heart-pulse me-1"></i> Calculate Cardiac Risk Score
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillHeartProfile(mode) {
+    if (mode === 'healthy') {
+        document.querySelector('input[name="age"]').value = '38';
+        document.querySelector('select[name="sex"]').value = '1';
+        document.querySelector('select[name="cp"]').value = '0';
+        document.querySelector('input[name="trestbps"]').value = '118';
+        document.querySelector('input[name="chol"]').value = '185';
+        document.querySelector('select[name="fbs"]').value = '0';
+        document.querySelector('select[name="restecg"]').value = '0';
+        document.querySelector('input[name="thalach"]').value = '172';
+        document.querySelector('select[name="exang"]').value = '0';
+        document.querySelector('input[name="oldpeak"]').value = '0.2';
+        document.querySelector('select[name="slope"]').value = '1';
+        document.querySelector('select[name="ca"]').value = '0';
+        document.querySelector('select[name="thal"]').value = '2';
+    } else if (mode === 'high_risk') {
+        document.querySelector('input[name="age"]').value = '64';
+        document.querySelector('select[name="sex"]').value = '1';
+        document.querySelector('select[name="cp"]').value = '3';
+        document.querySelector('input[name="trestbps"]').value = '158';
+        document.querySelector('input[name="chol"]').value = '295';
+        document.querySelector('select[name="fbs"]').value = '1';
+        document.querySelector('select[name="restecg"]').value = '1';
+        document.querySelector('input[name="thalach"]').value = '115';
+        document.querySelector('select[name="exang"]').value = '1';
+        document.querySelector('input[name="oldpeak"]').value = '2.6';
+        document.querySelector('select[name="slope"]').value = '2';
+        document.querySelector('select[name="ca"]').value = '2';
+        document.querySelector('select[name="thal"]').value = '3';
+    }
+}
+</script>
+{% endblock %}

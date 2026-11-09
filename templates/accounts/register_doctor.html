@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Doctor Registration & Onboarding | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm border-0 p-4">
+                <div class="text-center mb-4">
+                    <div class="stat-icon blue mx-auto mb-2" style="width: 56px; height: 56px;">
+                        <i class="fa-solid fa-user-doctor text-primary"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark">Medical Practitioner Onboarding</h3>
+                    <p class="text-muted small">Join our verified hospital network to consult patients, issue digital prescriptions, and review diagnostic scans</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-id-card me-1"></i> Account & Personal Details</h6>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">First Name *</label>
+                            {{ form.first_name }}
+                            {{ form.first_name.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Last Name *</label>
+                            {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Username *</label>
+                            {{ form.username }}
+                            {{ form.username.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Professional Email *</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Password *</label>
+                            {{ form.password }}
+                            {{ form.password.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Confirm Password *</label>
+                            {{ form.confirm_password }}
+                            {{ form.confirm_password.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Contact Phone Number *</label>
+                            {{ form.phone_number }}
+                            {{ form.phone_number.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Gender</label>
+                            {{ form.gender }}
+                            {{ form.gender.errors }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-stethoscope me-1"></i> Clinical Practice & Credentials</h6>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Specialty / Department *</label>
+                            {{ form.specialty }}
+                            <small class="text-muted">e.g. Cardiology, Endocrinology, General Medicine</small>
+                            {{ form.specialty.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Medical License / Registration # *</label>
+                            {{ form.license_number }}
+                            {{ form.license_number.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Degree / Qualifications *</label>
+                            {{ form.qualification }}
+                            <small class="text-muted">e.g. MBBS, MD, DM Cardiology</small>
+                            {{ form.qualification.errors }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Experience (Years)</label>
+                            {{ form.experience_years }}
+                            {{ form.experience_years.errors }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-semibold">Consultation Fee ($)</label>
+                            {{ form.consultation_fee }}
+                            {{ form.consultation_fee.errors }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Clinic Room / Hospital Block</label>
+                        {{ form.clinic_address }}
+                        {{ form.clinic_address.errors }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Professional Bio & Clinical Focus</label>
+                        {{ form.bio }}
+                        {{ form.bio.errors }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                        <i class="fa-solid fa-user-doctor me-2"></i> Register Doctor Profile
+                    </button>
+                </form>
+
+                <div class="text-center small text-muted mt-4">
+                    Already a registered doctor? <a href="{% url 'accounts:login' %}" class="fw-semibold text-primary text-decoration-none">Sign In here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

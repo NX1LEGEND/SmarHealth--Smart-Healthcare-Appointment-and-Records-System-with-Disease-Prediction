@@ -1,0 +1,35 @@
+{
+  "diabetes": {
+    "features": [
+      "pregnancies",
+      "glucose",
+      "blood_pressure",
+      "skin_thickness",
+      "insulin",
+      "bmi",
+      "diabetes_pedigree",
+      "age"
+    ],
+    "accuracy": 99.17,
+    "roc_auc": 0.9996
+  },
+  "heart_disease": {
+    "features": [
+      "age",
+      "sex",
+      "cp",
+      "trestbps",
+      "chol",
+      "fbs",
+      "restecg",
+      "thalach",
+      "exang",
+      "oldpeak",
+      "slope",
+      "ca",
+      "thal"
+    ],
+    "accuracy": 96.25,
+    "roc_auc": 0.9959
+  }
+}

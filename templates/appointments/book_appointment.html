@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Doctor Appointment | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-sm border-0 p-4">
+                <div class="text-center mb-4">
+                    <div class="stat-icon primary mx-auto mb-2" style="width: 56px; height: 56px;">
+                        <i class="fa-regular fa-calendar-plus text-primary"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark">Schedule Doctor Appointment</h3>
+                    <p class="text-muted small">Choose your preferred doctor, date, and appointment slot</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Attending Doctor / Specialist *</label>
+                        {{ form.doctor }}
+                        {{ form.doctor.errors }}
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Appointment Date *</label>
+                            {{ form.appointment_date }}
+                            {{ form.appointment_date.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Preferred Time Slot *</label>
+                            {{ form.appointment_time }}
+                            {{ form.appointment_time.errors }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Symptoms or Reason for Consultation *</label>
+                        {{ form.symptoms }}
+                        <small class="text-muted">Mention any primary complaints, pain points, or previous diagnoses</small>
+                        {{ form.symptoms.errors }}
+                    </div>
+
+                    <div class="card bg-light border p-3 rounded-3 mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="fa-solid fa-bell text-warning"></i>
+                            <span class="fw-semibold small">Automated Reminder Dispatch</span>
+                        </div>
+                        <p class="small text-muted mb-0">
+                            You will receive instant email and SMS notifications when the doctor confirms your slot, plus an automated reminder 24 hours prior to the consultation.
+                        </p>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'appointments:doctor_directory' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                            <i class="fa-solid fa-check me-1"></i> Submit Appointment Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

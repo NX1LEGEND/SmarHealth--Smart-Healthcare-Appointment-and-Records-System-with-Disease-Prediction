@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Patient Dashboard | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Welcome Header -->
+    <div class="card border-0 shadow-sm p-4 mb-4" style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: white; border-radius: 16px;">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <span class="badge bg-white text-dark mb-2 px-3 py-1 fw-semibold"><i class="fa-solid fa-user-check text-primary me-1"></i> Patient Portal</span>
+                <h2 class="fw-bold mb-1">Welcome back, {{ user.get_full_name|default:user.username }}!</h2>
+                <p class="text-white text-opacity-75 mb-0 small">
+                    Blood Group: <b>{{ user.blood_group|default:"Not specified" }}</b> &nbsp;|&nbsp;
+                    Phone: <b>{{ user.phone_number|default:"Not specified" }}</b> &nbsp;|&nbsp;
+                    Emergency Contact: <b>{{ user.patient_profile.emergency_contact_name|default:"Not set" }} ({{ user.patient_profile.emergency_contact_phone|default:"N/A" }})</b>
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'appointments:book' %}" class="btn btn-light fw-semibold text-primary px-3 shadow-sm">
+                    <i class="fa-solid fa-plus-circle me-1"></i> Book Appointment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 col-sm-6">
+            <div class="stat-widget">
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ total_appointments }}</h3>
+                    <div class="text-muted small">Total Consultations</div>
+                </div>
+                <div class="stat-icon primary">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="stat-widget">
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ total_records }}</h3>
+                    <div class="text-muted small">Encrypted Medical Records</div>
+                </div>
+                <div class="stat-icon blue">
+                    <i class="fa-solid fa-file-medical"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-12">
+            <div class="stat-widget">
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ total_predictions }}</h3>
+                    <div class="text-muted small">AI Risk Assessments</div>
+                </div>
+                <div class="stat-icon danger">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Banner -->
+    <div class="card border-0 shadow-sm p-3 mb-4 bg-white">
+        <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+            <span class="fw-semibold small text-muted"><i class="fa-solid fa-bolt text-warning me-1"></i> Fast Actions:</span>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'appointments:book' %}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-calendar-plus me-1"></i> Book Doctor</a>
+                <a href="{% url 'records:upload' %}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-file-arrow-up me-1"></i> Upload Test Report</a>
+                <a href="{% url 'prediction:diabetes' %}" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-droplet me-1"></i> Check Diabetes Risk</a>
+                <a href="{% url 'prediction:heart' %}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-heart-pulse me-1"></i> Check Heart Risk</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Upcoming & Recent Appointments -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="fa-regular fa-calendar-check text-primary me-2"></i>My Appointments</h5>
+                    <a href="{% url 'appointments:book' %}" class="btn btn-sm btn-primary">Book New</a>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_appointments %}
+                        <div class="table-responsive">
+                            <table class="table table-custom align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Doctor</th>
+                                        <th>Department</th>
+                                        <th>Date & Time</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appt in recent_appointments %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ appt.doctor.get_full_name_or_username }}</div>
+                                                <div class="text-muted small">{{ appt.doctor.doctor_profile.qualification|truncatechars:30 }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-primary border">{{ appt.doctor.doctor_profile.specialty }}</span>
+                                            </td>
+                                            <td>
+                                                <div>{{ appt.appointment_date|date:"M d, Y" }}</div>
+                                                <div class="text-muted small">{{ appt.appointment_time|time:"g:i A" }}</div>
+                                            </td>
+                                            <td>
+                                                {% if appt.status == 'CONFIRMED' %}
+                                                    <span class="badge badge-confirmed">Confirmed</span>
+                                                {% elif appt.status == 'PENDING' %}
+                                                    <span class="badge badge-pending">Pending Approval</span>
+                                                {% elif appt.status == 'COMPLETED' %}
+                                                    <span class="badge badge-completed">Completed</span>
+                                                {% else %}
+                                                    <span class="badge badge-cancelled">Cancelled</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="{% url 'appointments:detail' appt.id %}" class="btn btn-sm btn-outline-primary">
+                                                    Details
+                                                </a>
+                                                {% if appt.prescription %}
+                                                    <a href="{% url 'appointments:view_prescription' appt.id %}" class="btn btn-sm btn-outline-success ms-1" title="View Prescription">
+                                                        <i class="fa-solid fa-prescription"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5 text-muted">
+                            <i class="fa-regular fa-calendar-xmark fs-1 text-secondary mb-2"></i>
+                            <p class="mb-2">No appointments scheduled yet.</p>
+                            <a href="{% url 'appointments:book' %}" class="btn btn-sm btn-primary">Book Your First Doctor Consultation</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Medical Records Vault -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold"><i class="fa-solid fa-folder-shield text-info me-2"></i>Recent Medical Records & Scans</h5>
+                    <a href="{% url 'records:upload' %}" class="btn btn-sm btn-outline-primary">Upload Document</a>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_records %}
+                        <div class="table-responsive">
+                            <table class="table table-custom align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Document Title</th>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                        <th>File Size</th>
+                                        <th class="text-end">Secure File</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for rec in recent_records %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold text-dark">{{ rec.title }}</div>
+                                                <div class="text-muted small">Uploaded by {{ rec.uploaded_by.get_full_name_or_username }}</div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-secondary border">{{ rec.get_record_type_display }}</span>
+                                            </td>
+                                            <td>{{ rec.record_date|date:"M d, Y" }}</td>
+                                            <td><small class="text-muted">{{ rec.file_size_display }}</small></td>
+                                            <td class="text-end">
+                                                <a href="{% url 'records:detail' rec.id %}" class="btn btn-sm btn-light border" title="Inspect Record">
+                                                    <i class="fa-regular fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'records:download' rec.id %}" class="btn btn-sm btn-primary ms-1" title="Download Encrypted File">
+                                                    <i class="fa-solid fa-download"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted small">
+                            <i class="fa-solid fa-file-circle-plus fs-2 text-secondary mb-2"></i>
+                            <p class="mb-2">Your encrypted health vault is empty.</p>
+                            <a href="{% url 'records:upload' %}" class="btn btn-sm btn-outline-primary">Upload Lab Test or Scan</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar: AI Predictions & Reminders Summary -->
+        <div class="col-lg-4">
+            <!-- Latest AI Screening Results -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="fa-solid fa-microchip text-danger me-2"></i>AI Risk Screenings</h6>
+                    <a href="{% url 'prediction:hub' %}" class="small text-primary text-decoration-none">New Test</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_predictions %}
+                        {% for pred in recent_predictions %}
+                            <div class="p-3 rounded-3 mb-3 border {% if pred.risk_level == 'HIGH' %}bg-danger bg-opacity-10 border-danger border-opacity-25{% elif pred.risk_level == 'MODERATE' %}bg-warning bg-opacity-10 border-warning border-opacity-25{% else %}bg-success bg-opacity-10 border-success border-opacity-25{% endif %}">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-bold small">{{ pred.get_disease_type_display }}</span>
+                                    <span class="badge bg-{{ pred.badge_class }}">{{ pred.risk_level }} RISK</span>
+                                </div>
+                                <div class="d-flex align-items-baseline gap-2">
+                                    <span class="fs-4 fw-extrabold {% if pred.risk_level == 'HIGH' %}text-danger{% elif pred.risk_level == 'MODERATE' %}text-warning{% else %}text-success{% endif %}">
+                                        {{ pred.risk_score|floatformat:1 }}%
+                                    </span>
+                                    <span class="text-muted small">Risk Probability</span>
+                                </div>
+                                <p class="small text-muted mb-2 text-truncate-2" style="font-size: 0.8rem;">
+                                    {{ pred.recommendations|truncatechars:90 }}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center border-top pt-2">
+                                    <small class="text-muted" style="font-size: 0.7rem;">{{ pred.created_at|date:"M d, Y" }}</small>
+                                    <a href="{% url 'prediction:detail' pred.id %}" class="small text-decoration-none fw-semibold">View Analysis &rarr;</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4 text-muted small">
+                            <i class="fa-solid fa-heart-pulse fs-2 text-secondary mb-2"></i>
+                            <p class="mb-3">No preliminary disease risk screenings taken yet.</p>
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'prediction:diabetes' %}" class="btn btn-sm btn-outline-danger">Screen Diabetes Risk</a>
+                                <a href="{% url 'prediction:heart' %}" class="btn btn-sm btn-outline-primary">Screen Heart Risk</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Health Profile Card -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold"><i class="fa-solid fa-notes-medical text-primary me-2"></i>Clinical Profile</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush small">
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Blood Group:</span>
+                            <span class="fw-bold">{{ user.blood_group|default:"Not specified" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Known Allergies:</span>
+                            <span class="fw-medium text-danger">{{ user.patient_profile.allergies|default:"None reported" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Chronic Conditions:</span>
+                            <span class="fw-medium">{{ user.patient_profile.chronic_conditions|default:"None reported" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Current Medications:</span>
+                            <span class="fw-medium">{{ user.patient_profile.current_medications|default:"None reported" }}</span>
+                        </li>
+                    </ul>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary btn-sm w-100 mt-3">
+                        <i class="fa-solid fa-pen-to-square me-1"></i> Update Health Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

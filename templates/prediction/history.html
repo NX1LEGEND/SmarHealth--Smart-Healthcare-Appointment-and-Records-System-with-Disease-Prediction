@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Health Screening History | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Header Banner -->
+    <div class="card border-0 shadow-sm p-4 mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: white; border-radius: 16px;">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <span class="badge bg-danger mb-2 px-3 py-1 fw-semibold"><i class="fa-solid fa-clock-rotate-left me-1"></i> Longitudinal Risk Tracking</span>
+                <h2 class="fw-bold mb-1">AI Health Screening History</h2>
+                <p class="text-white text-opacity-75 mb-0 small">
+                    Chronological record of past preliminary risk evaluations for metabolic and cardiovascular disease progression.
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'prediction:hub' %}" class="btn btn-light fw-semibold text-primary px-3 shadow-sm">
+                    <i class="fa-solid fa-plus-circle me-1"></i> Run New Assessment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Table Card -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-list-check text-primary me-2"></i>Assessment Log</h5>
+            <span class="badge bg-light text-dark border">{{ predictions.count }} Assessments Logged</span>
+        </div>
+        <div class="card-body p-0">
+            {% if predictions %}
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th>Assessment Date</th>
+                                {% if not user.is_patient %}
+                                    <th>Patient</th>
+                                {% endif %}
+                                <th>Disease Screener</th>
+                                <th>Risk Probability</th>
+                                <th>Risk Stratification</th>
+                                <th>Identified Factors</th>
+                                <th class="text-end">Full Report</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pred in predictions %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ pred.created_at|date:"M d, Y" }}</div>
+                                        <small class="text-muted">{{ pred.created_at|time:"g:i A" }}</small>
+                                    </td>
+                                    {% if not user.is_patient %}
+                                        <td>
+                                            <div class="fw-semibold">{{ pred.patient.get_full_name_or_username }}</div>
+                                            <small class="text-muted">{{ pred.patient.blood_group|default:"" }}</small>
+                                        </td>
+                                    {% endif %}
+                                    <td>
+                                        <span class="fw-bold text-dark">{{ pred.get_disease_type_display }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="fs-6 fw-extrabold {% if pred.risk_level == 'HIGH' %}text-danger{% elif pred.risk_level == 'MODERATE' %}text-warning{% else %}text-success{% endif %}">
+                                            {{ pred.risk_score|floatformat:1 }}%
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ pred.badge_class }}">{{ pred.risk_level }} RISK</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ pred.contributing_factors|length }} factors noted</small>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'prediction:detail' pred.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fa-regular fa-file-lines me-1"></i> View Report
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-notes-medical fs-1 text-secondary mb-3"></i>
+                    <h6 class="fw-bold">No Risk Assessments on Record</h6>
+                    <p class="small text-muted mb-3">Take your first automated preliminary disease assessment today.</p>
+                    <a href="{% url 'prediction:hub' %}" class="btn btn-primary btn-sm">
+                        Start Screening Now
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

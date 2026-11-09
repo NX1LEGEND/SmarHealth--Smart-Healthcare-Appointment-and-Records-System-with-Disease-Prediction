@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications & Reminders | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="fa-regular fa-bell text-primary me-2"></i>Notifications & Reminders</h4>
+                        <p class="text-muted small mb-0">System alerts, booking confirmations, and appointment SMS/email logs</p>
+                    </div>
+                    {% if notifications %}
+                        <a href="{% url 'appointments:mark_notifications_read' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fa-solid fa-check-double me-1"></i> Mark All as Read
+                        </a>
+                    {% endif %}
+                </div>
+
+                {% if notifications %}
+                    <div class="list-group list-group-flush">
+                        {% for notif in notifications %}
+                            <div class="list-group-item p-3 rounded-3 mb-2 border {% if not notif.is_read %}bg-light border-primary border-opacity-25{% endif %}">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <div class="d-flex align-items-center gap-2">
+                                        {% if notif.notification_type == 'BOOKING' %}
+                                            <i class="fa-regular fa-calendar-plus text-primary"></i>
+                                        {% elif notif.notification_type == 'CONFIRMATION' %}
+                                            <i class="fa-solid fa-circle-check text-success"></i>
+                                        {% elif notif.notification_type == 'REMINDER' %}
+                                            <i class="fa-solid fa-bell text-warning"></i>
+                                        {% elif notif.notification_type == 'CANCELLATION' %}
+                                            <i class="fa-solid fa-circle-xmark text-danger"></i>
+                                        {% elif notif.notification_type == 'PREDICTION' %}
+                                            <i class="fa-solid fa-brain text-danger"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-envelope text-secondary"></i>
+                                        {% endif %}
+                                        <span class="fw-bold text-dark">{{ notif.title }}</span>
+                                    </div>
+                                    <small class="text-muted">{{ notif.created_at|timesince }} ago</small>
+                                </div>
+                                <p class="text-secondary small mb-2 ps-4">
+                                    {{ notif.message }}
+                                </p>
+                                {% if notif.link %}
+                                    <div class="ps-4">
+                                        <a href="{{ notif.link }}" class="btn btn-sm btn-outline-secondary py-0" style="font-size: 0.75rem;">
+                                            View Related Record &rarr;
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa-regular fa-bell-slash fs-1 text-secondary mb-3"></i>
+                        <h6 class="fw-bold">No Notifications</h6>
+                        <p class="small">You are all caught up with your healthcare alerts.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

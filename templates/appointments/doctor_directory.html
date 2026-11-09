@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Find Specialist Doctors | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Header & Search Box -->
+    <div class="card border-0 shadow-sm p-4 mb-4" style="background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%); border-radius: 16px;">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-3 mb-lg-0">
+                <span class="badge bg-primary px-3 py-1 mb-2 fw-semibold">Specialist Directory</span>
+                <h2 class="fw-bold mb-1">Book Qualified Medical Doctors</h2>
+                <p class="text-muted small mb-0">Search certified clinicians across Cardiology, Endocrinology, Internal Medicine, and Orthopedics.</p>
+            </div>
+            <div class="col-lg-6">
+                <form method="get" class="d-flex gap-2">
+                    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by doctor name, specialty, degree...">
+                    <button type="submit" class="btn btn-primary px-4"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+                    {% if query or specialty_filter %}
+                        <a href="{% url 'appointments:doctor_directory' %}" class="btn btn-outline-secondary">Reset</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Specialty Filter Chips -->
+    <div class="d-flex flex-wrap gap-2 mb-4 align-items-center">
+        <span class="small fw-bold text-muted me-2"><i class="fa-solid fa-filter me-1"></i> Department:</span>
+        <a href="{% url 'appointments:doctor_directory' %}" class="btn btn-sm {% if not specialty_filter %}btn-primary{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
+            All Specialties
+        </a>
+        {% for spec in specialties %}
+            <a href="?specialty={{ spec }}" class="btn btn-sm {% if specialty_filter == spec %}btn-primary{% else %}btn-outline-secondary bg-white{% endif %} rounded-pill px-3">
+                {{ spec }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Doctor Grid -->
+    <div class="row g-4">
+        {% if doctors %}
+            {% for doc in doctors %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 p-4 border shadow-sm d-flex flex-column">
+                        <div class="d-flex align-items-start gap-3 mb-3">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary fs-3 shadow-sm border" style="width: 64px; height: 64px; flex-shrink: 0;">
+                                <i class="fa-solid fa-user-doctor"></i>
+                            </div>
+                            <div class="overflow-hidden">
+                                <h5 class="fw-bold mb-1 text-truncate">Dr. {{ doc.get_full_name }}</h5>
+                                <span class="badge bg-light text-primary border small">{{ doc.doctor_profile.specialty }}</span>
+                                <div class="text-muted small mt-1 text-truncate">{{ doc.doctor_profile.qualification }}</div>
+                            </div>
+                        </div>
+
+                        <p class="small text-muted mb-3 flex-grow-1" style="min-height: 48px;">
+                            {{ doc.doctor_profile.bio|default:"Dedicated specialist delivering comprehensive clinical diagnosis and patient care."|truncatechars:130 }}
+                        </p>
+
+                        <div class="bg-light p-3 rounded-3 small mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted"><i class="fa-solid fa-award me-1 text-warning"></i> Experience:</span>
+                                <span class="fw-bold text-dark">{{ doc.doctor_profile.experience_years }} Years</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted"><i class="fa-solid fa-door-open me-1 text-primary"></i> Clinic:</span>
+                                <span class="text-truncate" style="max-width: 170px;">{{ doc.doctor_profile.clinic_address|default:"General OPD" }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted"><i class="fa-solid fa-money-bill-wave me-1 text-success"></i> Consultation Fee:</span>
+                                <span class="fw-bold text-success">${{ doc.doctor_profile.consultation_fee }}</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="{% url 'appointments:doctor_detail' doc.id %}" class="btn btn-outline-secondary btn-sm flex-grow-1">
+                                Profile
+                            </a>
+                            <a href="{% url 'appointments:book' %}?doctor={{ doc.id }}" class="btn btn-primary btn-sm flex-grow-1">
+                                <i class="fa-regular fa-calendar-plus me-1"></i> Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="fa-solid fa-user-doctor fs-1 text-muted mb-3"></i>
+                <h5>No doctors found matching your criteria.</h5>
+                <p class="text-muted small">Try searching for other terms or selecting "All Specialties".</p>
+                <a href="{% url 'appointments:doctor_directory' %}" class="btn btn-primary btn-sm">Clear Filters</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

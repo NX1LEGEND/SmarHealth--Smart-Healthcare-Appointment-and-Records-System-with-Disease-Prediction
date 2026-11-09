@@ -1,0 +1,531 @@
+/* ==========================================================================
+   SmartHealth Design System - Vibrant, High-Legibility Modern Clinical UI
+   ========================================================================== */
+
+:root {
+    /* Primary Healthcare Emerald/Teal Palette */
+    --primary-color: #0d9488;
+    --primary-hover: #0f766e;
+    --primary-dark: #115e59;
+    --primary-light: #ccfbf1;
+    --primary-gradient: linear-gradient(135deg, #0d9488 0%, #059669 100%);
+    --primary-glow: 0 4px 16px rgba(13, 148, 136, 0.35);
+
+    /* Vibrant Royal Indigo / Azure Palette */
+    --secondary-color: #2563eb;
+    --secondary-hover: #1d4ed8;
+    --secondary-light: #dbeafe;
+    --secondary-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    --secondary-glow: 0 4px 16px rgba(37, 99, 235, 0.35);
+
+    /* Vivid Alerts & Accents */
+    --danger-color: #e11d48;
+    --danger-hover: #be123c;
+    --danger-light: #ffe4e6;
+    --danger-gradient: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+    --danger-glow: 0 4px 16px rgba(225, 29, 72, 0.35);
+
+    --warning-color: #d97706;
+    --warning-light: #fef3c7;
+    --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+
+    --success-color: #059669;
+    --success-light: #d1fae5;
+    --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --success-glow: 0 4px 16px rgba(16, 185, 129, 0.35);
+
+    /* Contrast & Neutral Tones */
+    --dark-color: #0f172a;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --light-bg: #f8fafc;
+    --surface-bg: #ffffff;
+    --border-color: #cbd5e1;
+    --border-light: #e2e8f0;
+
+    /* Elevated Shadows */
+    --card-shadow: 0 4px 12px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.04);
+    --card-hover-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.06);
+}
+
+/* Base Typography Scale (Bigger & Crisp) */
+html {
+    font-size: 17px; /* Scaled up from 16px default */
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-secondary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/* Headings: Bold, Crisp & Expressive */
+h1, .h1 {
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+}
+
+h2, .h2 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+h3, .h3 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--text-primary);
+}
+
+h4, .h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+h5, .h5 {
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+h6, .h6 {
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Larger, clear micro-copy */
+small, .small {
+    font-size: 0.925rem !important;
+}
+
+p.lead {
+    font-size: 1.25rem !important;
+    line-height: 1.65;
+    color: #475569 !important;
+}
+
+/* ==========================================================================
+   Navbar Styling - Vibrant & High Contrast
+   ========================================================================== */
+.navbar-custom {
+    background: #ffffff;
+    border-bottom: 2px solid #e2e8f0;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    padding: 0.95rem 1rem;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.55rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    letter-spacing: -0.02em;
+}
+
+.navbar-brand .brand-gradient {
+    background: linear-gradient(135deg, #0d9488 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-link {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #334155 !important;
+    padding: 0.6rem 1rem !important;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+    background-color: #f1f5f9;
+}
+
+.nav-link.active {
+    color: var(--primary-color) !important;
+    background-color: #ccfbf1;
+}
+
+/* Dropdown Menu styling */
+.dropdown-menu {
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12);
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f5f9;
+    color: var(--primary-color);
+}
+
+/* ==========================================================================
+   Buttons - Rich Vibrant Gradients & Sizing
+   ========================================================================== */
+.btn {
+    font-size: 1.02rem;
+    font-weight: 600;
+    padding: 0.65rem 1.35rem;
+    border-radius: 10px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.01em;
+}
+
+.btn-sm {
+    font-size: 0.92rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: 8px;
+}
+
+.btn-lg {
+    font-size: 1.15rem;
+    padding: 0.85rem 1.85rem;
+    border-radius: 12px;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    color: #ffffff;
+    box-shadow: var(--primary-glow);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background: linear-gradient(135deg, #0f766e 0%, #047857 100%);
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 20px rgba(13, 148, 136, 0.45);
+    color: #ffffff;
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-gradient);
+    border-color: transparent;
+    color: #ffffff;
+    transform: translateY(-1.5px);
+    box-shadow: var(--primary-glow);
+}
+
+.btn-danger {
+    background: var(--danger-gradient);
+    border: none;
+    color: #ffffff;
+    box-shadow: var(--danger-glow);
+}
+
+.btn-danger:hover, .btn-danger:focus {
+    background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 20px rgba(225, 29, 72, 0.45);
+    color: #ffffff;
+}
+
+.btn-success {
+    background: var(--success-gradient);
+    border: none;
+    color: #ffffff;
+    box-shadow: var(--success-glow);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   Cards & Elevated Surfaces
+   ========================================================================== */
+.card {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #ffffff;
+}
+
+.card:hover {
+    box-shadow: var(--card-hover-shadow);
+}
+
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1.5px solid #e2e8f0;
+    font-weight: 700;
+    font-size: 1.15rem;
+    padding: 1.15rem 1.4rem;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
+}
+
+/* ==========================================================================
+   Stat Widgets (Bigger Numbers & Glowing Icons)
+   ========================================================================== */
+.stat-widget {
+    padding: 1.6rem;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s ease;
+}
+
+.stat-widget:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.stat-widget h3 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.15rem;
+}
+
+.stat-widget .text-muted {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.85rem;
+    flex-shrink: 0;
+}
+
+.stat-icon.primary {
+    background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+    color: #0f766e;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+}
+
+.stat-icon.blue {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1d4ed8;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.stat-icon.warning {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #b45309;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+}
+
+.stat-icon.danger {
+    background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
+    color: #e11d48;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+}
+
+.stat-icon.success {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #15803d;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+}
+
+/* ==========================================================================
+   Badges - High Vibrancy & Legibility
+   ========================================================================== */
+.badge {
+    font-size: 0.88rem !important;
+    font-weight: 700;
+    padding: 0.45em 0.85em;
+    border-radius: 8px;
+    letter-spacing: 0.02em;
+}
+
+.badge-pending {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1.5px solid #fde68a;
+}
+
+.badge-confirmed {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1.5px solid #bfdbfe;
+}
+
+.badge-completed {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1.5px solid #bbf7d0;
+}
+
+.badge-cancelled {
+    background: #fff1f2;
+    color: #be123c;
+    border: 1.5px solid #fecdd3;
+}
+
+/* ==========================================================================
+   Form Controls (Comfortable Sizing & High Contrast)
+   ========================================================================== */
+.form-label {
+    font-weight: 700 !important;
+    font-size: 0.98rem !important;
+    color: #1e293b;
+    margin-bottom: 0.4rem;
+}
+
+.form-control, .form-select {
+    font-size: 1.05rem;
+    padding: 0.75rem 1.05rem;
+    border-radius: 10px;
+    border: 1.5px solid #cbd5e1;
+    color: #0f172a;
+    transition: all 0.2s ease;
+    background-color: #ffffff;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.18);
+    background-color: #ffffff;
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+    font-size: 0.98rem;
+}
+
+/* ==========================================================================
+   Tables - Spacing & High-Contrast Typography
+   ========================================================================== */
+.table-custom {
+    margin-bottom: 0;
+    font-size: 1.02rem;
+}
+
+.table-custom th {
+    background-color: #f1f5f9;
+    color: #334155;
+    font-size: 0.92rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    border-top: none;
+    border-bottom: 2px solid #cbd5e1;
+    padding: 1.1rem 1.25rem;
+}
+
+.table-custom td {
+    padding: 1.15rem 1.25rem;
+    vertical-align: middle;
+    border-color: #f1f5f9;
+    color: #1e293b;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* ==========================================================================
+   AI Risk Gauges & Analysis Cards
+   ========================================================================== */
+.risk-card {
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.risk-card.high {
+    background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 50%, #fecdd3 100%);
+    border: 3px solid #f43f5e;
+    color: #881337;
+    box-shadow: 0 12px 32px rgba(225, 29, 72, 0.18);
+}
+
+.risk-card.moderate {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
+    border: 3px solid #f59e0b;
+    color: #78350f;
+    box-shadow: 0 12px 32px rgba(245, 158, 11, 0.18);
+}
+
+.risk-card.low {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+    border: 3px solid #10b981;
+    color: #064e3b;
+    box-shadow: 0 12px 32px rgba(16, 185, 129, 0.18);
+}
+
+.risk-score-display {
+    font-size: 4.5rem;
+    font-weight: 900;
+    line-height: 1;
+    margin: 1.25rem 0;
+    letter-spacing: -0.03em;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+footer {
+    background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
+    color: #94a3b8;
+    padding: 3.5rem 0 2rem;
+    margin-top: 5rem;
+    border-top: 3px solid var(--primary-color);
+}
+
+footer h5, footer h6 {
+    color: #f8fafc !important;
+    font-weight: 700;
+}
+
+footer a {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 0.98rem;
+    transition: color 0.15s ease;
+}
+
+footer a:hover {
+    color: #38bdf8;
+    text-decoration: underline;
+}

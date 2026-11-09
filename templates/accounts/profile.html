@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Profile & Settings | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-4">
+                <div class="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
+                    <div class="stat-icon primary" style="width: 56px; height: 56px;">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">{{ user.get_full_name_or_username }}</h4>
+                        <span class="badge bg-primary">{{ user.get_role_display }}</span>
+                        <span class="text-muted small ms-2">Member since {{ user.date_joined|date:"F Y" }}</span>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-user me-2 text-primary"></i>Personal & Contact Information</h5>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">First Name</label>
+                            {{ user_form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Last Name</label>
+                            {{ user_form.last_name }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Email</label>
+                            {{ user_form.email }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Phone (for Reminders)</label>
+                            {{ user_form.phone_number }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Date of Birth</label>
+                            {{ user_form.date_of_birth }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Gender</label>
+                            {{ user_form.gender }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold">Blood Group</label>
+                            {{ user_form.blood_group }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-semibold">Address</label>
+                        {{ user_form.address }}
+                    </div>
+
+                    {% if role_form %}
+                        <hr class="my-4">
+                        {% if user.is_patient %}
+                            <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-heart-pulse text-danger me-2"></i>Medical History & Emergency Contact</h5>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Emergency Contact Person</label>
+                                    {{ role_form.emergency_contact_name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Emergency Contact Phone</label>
+                                    {{ role_form.emergency_contact_phone }}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Known Drug or Food Allergies</label>
+                                {{ role_form.allergies }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Chronic Conditions (e.g. Hypertension, Asthma)</label>
+                                {{ role_form.chronic_conditions }}
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-semibold">Current Ongoing Medications</label>
+                                {{ role_form.current_medications }}
+                            </div>
+                        {% elif user.is_doctor %}
+                            <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-stethoscope text-primary me-2"></i>Clinical Practice Settings</h5>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Specialty</label>
+                                    {{ role_form.specialty }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Medical License #</label>
+                                    {{ role_form.license_number }}
+                                </div>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Degree / Qualifications</label>
+                                    {{ role_form.qualification }}
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-semibold">Experience (Yrs)</label>
+                                    {{ role_form.experience_years }}
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-semibold">Consult Fee ($)</label>
+                                    {{ role_form.consultation_fee }}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Clinic / Hospital Room</label>
+                                {{ role_form.clinic_address }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Available Working Days</label>
+                                {{ role_form.available_days }}
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold">Start Time</label>
+                                    {{ role_form.start_time }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold">End Time</label>
+                                    {{ role_form.end_time }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold">Slot Duration (Mins)</label>
+                                    {{ role_form.slot_duration_minutes }}
+                                </div>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                {{ role_form.is_available }}
+                                <label class="form-check-label fw-semibold" for="{{ role_form.is_available.id_for_label }}">Accepting New Patient Appointments</label>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small fw-semibold">Doctor Bio</label>
+                                {{ role_form.bio }}
+                            </div>
+                        {% endif %}
+                    {% endif %}
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'core:dashboard_redirect' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold">Save Profile Updates</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

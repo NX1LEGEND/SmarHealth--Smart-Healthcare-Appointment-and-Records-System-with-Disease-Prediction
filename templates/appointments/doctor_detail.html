@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dr. {{ doctor.get_full_name }} - {{ profile.specialty }} | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row g-4">
+        <!-- Doctor Profile Card -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <div class="d-flex flex-wrap align-items-center gap-4 mb-4 border-bottom pb-4">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary fs-1 border shadow-sm" style="width: 90px; height: 90px;">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+                    <div>
+                        <span class="badge bg-light text-primary border mb-1">{{ profile.specialty }}</span>
+                        <h2 class="fw-bold mb-1">Dr. {{ doctor.get_full_name }}</h2>
+                        <div class="text-secondary fw-medium">{{ profile.qualification }}</div>
+                        <small class="text-muted d-block mt-1">Medical License: <b>{{ profile.license_number }}</b></small>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-align-left text-primary me-2"></i>About the Doctor</h5>
+                <p class="text-muted leading-relaxed">
+                    {{ profile.bio|default:"Experienced clinician dedicated to delivering personalized medical care, comprehensive disease surveillance, and evidence-based diagnostic protocols." }}
+                </p>
+
+                <hr class="my-4">
+
+                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-hospital text-info me-2"></i>Practice & Clinical Details</h5>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <span class="text-muted small d-block">Clinical Department</span>
+                            <span class="fw-bold text-dark">{{ profile.specialty }}</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <span class="text-muted small d-block">Total Experience</span>
+                            <span class="fw-bold text-dark">{{ profile.experience_years }} Years of Practice</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <span class="text-muted small d-block">Clinic Room / Hospital Wing</span>
+                            <span class="fw-bold text-dark">{{ profile.clinic_address|default:"Central Hospital OPD" }}</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <span class="text-muted small d-block">Consultation Fee</span>
+                            <span class="fw-bold text-success fs-5">${{ profile.consultation_fee }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-clock text-warning me-2"></i>Operating Hours</h5>
+                <div class="p-3 bg-light rounded-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Working Days:</span>
+                        <span class="fw-semibold">{{ profile.available_days }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Daily Clinic Hours:</span>
+                        <span class="fw-semibold">{{ profile.start_time|time:"g:i A" }} - {{ profile.end_time|time:"g:i A" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Slot Duration:</span>
+                        <span class="fw-semibold">{{ profile.slot_duration_minutes }} minutes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Widget Column -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 p-4 sticky-top" style="top: 90px;">
+                <h5 class="fw-bold mb-3"><i class="fa-regular fa-calendar-plus text-primary me-2"></i>Book Consultation</h5>
+                <p class="small text-muted mb-3">Schedule an in-person or clinical review with Dr. {{ doctor.last_name }}.</p>
+                
+                <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 mb-4">
+                    <span class="text-muted small">Consultation Fee:</span>
+                    <span class="fs-4 fw-bold text-success">${{ profile.consultation_fee }}</span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'appointments:book' %}?doctor={{ doctor.id }}" class="btn btn-primary py-2 fw-semibold">
+                        <i class="fa-solid fa-calendar-check me-2"></i> Select Date & Slot
+                    </a>
+                    <a href="{% url 'appointments:doctor_directory' %}" class="btn btn-outline-secondary btn-sm">
+                        &larr; Back to Doctor Directory
+                    </a>
+                </div>
+
+                <div class="alert alert-info mt-4 mb-0 small">
+                    <i class="fa-solid fa-bell me-1"></i> SMS & Email confirmations are automatically sent upon booking.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Appointment #{{ appointment.id }} | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <a href="{% url 'core:dashboard_redirect' %}" class="small text-muted text-decoration-none mb-1 d-inline-block">
+                &larr; Return to Dashboard
+            </a>
+            <h3 class="fw-bold mb-0">Consultation File #{{ appointment.id }}</h3>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            {% if appointment.status == 'CONFIRMED' %}
+                <span class="badge badge-confirmed fs-6">Confirmed</span>
+            {% elif appointment.status == 'PENDING' %}
+                <span class="badge badge-pending fs-6">Pending Approval</span>
+            {% elif appointment.status == 'COMPLETED' %}
+                <span class="badge badge-completed fs-6">Completed</span>
+            {% else %}
+                <span class="badge badge-cancelled fs-6">Cancelled</span>
+            {% endif %}
+
+            <!-- Trigger Reminder Button -->
+            <a href="{% url 'appointments:trigger_reminder' appointment.id %}" class="btn btn-outline-warning btn-sm fw-semibold" title="Simulate and test instant SMS & Email reminder">
+                <i class="fa-solid fa-bell me-1"></i> Test Reminder (SMS/Email)
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Appointment Details -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block">Attending Doctor</span>
+                        <h5 class="fw-bold mb-0">{{ appointment.doctor.get_full_name_or_username }}</h5>
+                        <span class="badge bg-light text-primary border small">{{ appointment.doctor.doctor_profile.specialty }}</span>
+                        <div class="text-muted small mt-1">{{ appointment.doctor.doctor_profile.clinic_address|default:"General OPD" }}</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block">Consultation Schedule</span>
+                        <h5 class="fw-bold mb-0 text-dark">{{ appointment.appointment_date|date:"l, F d, Y" }}</h5>
+                        <span class="badge bg-light text-dark border small">{{ appointment.appointment_time|time:"g:i A" }}</span>
+                        <div class="text-muted small mt-1">Fee: <b>${{ appointment.doctor.doctor_profile.consultation_fee }}</b></div>
+                    </div>
+                </div>
+
+                <hr class="my-2">
+
+                <!-- Reported Symptoms -->
+                <div class="my-3">
+                    <h6 class="fw-bold text-dark"><i class="fa-solid fa-notes-medical text-danger me-2"></i>Reported Symptoms & Concerns</h6>
+                    <div class="p-3 bg-light rounded-3 text-secondary">
+                        {{ appointment.symptoms|linebreaksbr }}
+                    </div>
+                </div>
+
+                <!-- Doctor Clinical Notes -->
+                <div class="my-3">
+                    <h6 class="fw-bold text-dark"><i class="fa-solid fa-user-doctor text-primary me-2"></i>Doctor Clinical Notes</h6>
+                    {% if appointment.doctor_notes %}
+                        <div class="p-3 bg-light rounded-3 text-dark">
+                            {{ appointment.doctor_notes|linebreaksbr }}
+                        </div>
+                    {% else %}
+                        <p class="text-muted small fst-italic">No clinical notes recorded yet.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Prescription Section -->
+                {% if prescription %}
+                    <hr class="my-4">
+                    <div class="p-3 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold text-success mb-0">
+                                <i class="fa-solid fa-file-prescription me-2"></i> Official Prescription Issued
+                            </h6>
+                            <a href="{% url 'appointments:view_prescription' appointment.id %}" class="btn btn-sm btn-success">
+                                <i class="fa-solid fa-print me-1"></i> View & Print Prescription
+                            </a>
+                        </div>
+                        <p class="small text-muted mb-1"><b>Diagnosis:</b> {{ prescription.diagnosis }}</p>
+                        <p class="small text-muted mb-0"><b>Issued On:</b> {{ prescription.created_at|date:"M d, Y" }}</p>
+                    </div>
+                {% endif %}
+
+                <!-- Associated Medical Records -->
+                <hr class="my-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-folder-open text-info me-2"></i>Attached Records & Reports</h6>
+                    <a href="{% url 'records:upload' %}" class="btn btn-sm btn-outline-primary">Attach New Report</a>
+                </div>
+                {% if records %}
+                    <div class="list-group">
+                        {% for rec in records %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-bold">{{ rec.title }}</div>
+                                    <small class="text-muted">{{ rec.get_record_type_display }} &bull; {{ rec.record_date|date:"M d, Y" }}</small>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'records:detail' rec.id %}" class="btn btn-sm btn-light border">View</a>
+                                    <a href="{% url 'records:download' rec.id %}" class="btn btn-sm btn-primary"><i class="fa-solid fa-download"></i></a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small">No diagnostic reports attached specifically to this consultation.</p>
+                {% endif %}
+            </div>
+
+            <!-- Doctor Action: Issue Prescription -->
+            {% if prescription_form and user == appointment.doctor %}
+                <div class="card shadow-sm border-0 p-4 mb-4">
+                    <h5 class="fw-bold text-success mb-3"><i class="fa-solid fa-prescription me-2"></i>Issue Clinical Prescription</h5>
+                    <form method="post" action="{% url 'appointments:create_prescription' appointment.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Clinical Diagnosis *</label>
+                            {{ prescription_form.diagnosis }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Prescribed Medicines & Dosages *</label>
+                            {{ prescription_form.medicines }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Lifestyle, Dietary, and Rest Instructions</label>
+                            {{ prescription_form.instructions }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Recommended Follow-up Date</label>
+                            {{ prescription_form.follow_up_date }}
+                        </div>
+                        <button type="submit" class="btn btn-success fw-semibold">
+                            <i class="fa-solid fa-check-circle me-1"></i> Save & Issue Prescription
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column: Patient Profile & Status Updates -->
+        <div class="col-lg-4">
+            <!-- Patient Vitals Card -->
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-id-card text-primary me-2"></i>Patient Dossier</h6>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-primary fs-4 border" style="width: 52px; height: 52px;">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0">{{ appointment.patient.get_full_name_or_username }}</h6>
+                        <small class="text-muted">{{ appointment.patient.email }}</small>
+                    </div>
+                </div>
+
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Blood Group:</span>
+                        <span class="fw-bold text-danger">{{ appointment.patient.blood_group|default:"Not specified" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Phone:</span>
+                        <span class="fw-semibold">{{ appointment.patient.phone_number|default:"N/A" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Known Allergies:</span>
+                        <span class="fw-semibold text-danger">{{ appointment.patient.patient_profile.allergies|default:"None" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Chronic Illness:</span>
+                        <span class="fw-semibold">{{ appointment.patient.patient_profile.chronic_conditions|default:"None" }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Doctor / Admin Management Controls -->
+            {% if status_form %}
+                <div class="card shadow-sm border-0 p-4 mb-4">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-sliders text-primary me-2"></i>Update Appointment Status</h6>
+                    <form method="post" action="{% url 'appointments:update_status' appointment.id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Consultation Status</label>
+                            {{ status_form.status }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold">Doctor Clinical Observations</label>
+                            {{ status_form.doctor_notes }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm w-100 fw-semibold">
+                            Save Changes & Notify Patient
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+            <!-- Cancel Appointment Action -->
+            {% if appointment.status != 'CANCELLED' and appointment.status != 'COMPLETED' %}
+                <div class="card shadow-sm border-0 p-3 bg-light">
+                    <form method="post" action="{% url 'appointments:cancel' appointment.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100" onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                            <i class="fa-solid fa-ban me-1"></i> Cancel Appointment
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

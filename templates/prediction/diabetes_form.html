@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Diabetes Risk Assessment | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm border-0 p-4">
+                <div class="text-center mb-4">
+                    <div class="stat-icon bg-danger bg-opacity-10 text-danger mx-auto mb-2" style="width: 56px; height: 56px;">
+                        <i class="fa-solid fa-droplet fs-3"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark">Type 2 Diabetes Mellitus Screener</h3>
+                    <p class="text-muted small">
+                        Enter patient diagnostic biomarkers to calculate preliminary metabolic risk score
+                        {% if patient and patient != user %}
+                            for <b>{{ patient.get_full_name_or_username }}</b>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Interactive Demo Fill Buttons -->
+                <div class="card bg-light border p-3 mb-4 rounded-3">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <span class="small fw-bold text-dark">
+                            <i class="fa-solid fa-wand-magic-sparkles text-primary me-1"></i> Quick Test Profiles:
+                        </span>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="fillDiabetesProfile('healthy')">
+                                <i class="fa-solid fa-heart-circle-check me-1"></i> Normal Vitals (Low Risk)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="fillDiabetesProfile('high_risk')">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i> High Risk Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" id="diabetesForm">
+                    {% csrf_token %}
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Patient Age (Years) *</label>
+                            {{ form.age }}
+                            <small class="text-muted">{{ form.age.help_text }}</small>
+                            {{ form.age.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Number of Pregnancies</label>
+                            {{ form.pregnancies }}
+                            <small class="text-muted">{{ form.pregnancies.help_text }}</small>
+                            {{ form.pregnancies.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Fasting Blood Glucose (mg/dL) *</label>
+                            {{ form.glucose }}
+                            <small class="text-muted">{{ form.glucose.help_text }}</small>
+                            {{ form.glucose.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Diastolic Blood Pressure (mm Hg) *</label>
+                            {{ form.blood_pressure }}
+                            <small class="text-muted">{{ form.blood_pressure.help_text }}</small>
+                            {{ form.blood_pressure.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Body Mass Index (BMI) *</label>
+                            {{ form.bmi }}
+                            <small class="text-muted">{{ form.bmi.help_text }}</small>
+                            {{ form.bmi.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">2-Hour Serum Insulin (µU/mL) *</label>
+                            {{ form.insulin }}
+                            <small class="text-muted">{{ form.insulin.help_text }}</small>
+                            {{ form.insulin.errors }}
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Triceps Skinfold Thickness (mm)</label>
+                            {{ form.skin_thickness }}
+                            <small class="text-muted">{{ form.skin_thickness.help_text }}</small>
+                            {{ form.skin_thickness.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold">Diabetes Pedigree Score *</label>
+                            {{ form.diabetes_pedigree }}
+                            <small class="text-muted">{{ form.diabetes_pedigree.help_text }}</small>
+                            {{ form.diabetes_pedigree.errors }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'prediction:hub' %}" class="btn btn-outline-secondary">Back to Hub</a>
+                        <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold shadow-sm">
+                            <i class="fa-solid fa-chart-pie me-1"></i> Calculate Preliminary Risk Score
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillDiabetesProfile(mode) {
+    if (mode === 'healthy') {
+        document.querySelector('input[name="age"]').value = '29';
+        document.querySelector('input[name="pregnancies"]').value = '1';
+        document.querySelector('input[name="glucose"]').value = '92.0';
+        document.querySelector('input[name="blood_pressure"]').value = '68.0';
+        document.querySelector('input[name="bmi"]').value = '22.8';
+        document.querySelector('input[name="insulin"]').value = '65.0';
+        document.querySelector('input[name="skin_thickness"]').value = '18.0';
+        document.querySelector('input[name="diabetes_pedigree"]').value = '0.24';
+    } else if (mode === 'high_risk') {
+        document.querySelector('input[name="age"]').value = '52';
+        document.querySelector('input[name="pregnancies"]').value = '4';
+        document.querySelector('input[name="glucose"]').value = '175.0';
+        document.querySelector('input[name="blood_pressure"]').value = '88.0';
+        document.querySelector('input[name="bmi"]').value = '35.4';
+        document.querySelector('input[name="insulin"]').value = '210.0';
+        document.querySelector('input[name="skin_thickness"]').value = '34.0';
+        document.querySelector('input[name="diabetes_pedigree"]').value = '0.78';
+    }
+}
+</script>
+{% endblock %}

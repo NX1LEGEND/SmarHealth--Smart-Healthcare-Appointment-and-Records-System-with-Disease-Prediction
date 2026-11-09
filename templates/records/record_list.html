@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medical Records Vault | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Header Banner -->
+    <div class="card border-0 shadow-sm p-4 mb-4" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border-radius: 16px;">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <span class="badge bg-white text-dark mb-2 px-3 py-1 fw-semibold"><i class="fa-solid fa-folder-shield text-info me-1"></i> Protected Health Records</span>
+                <h2 class="fw-bold mb-1">Encrypted Medical Vault</h2>
+                <p class="text-white text-opacity-75 mb-0 small">
+                    Store and inspect diagnostic laboratory panels, imaging scans, and hospital discharge summaries with strict role-based access controls.
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'records:upload' %}" class="btn btn-light fw-semibold text-primary px-3 shadow-sm">
+                    <i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload Medical Document
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Records Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-list-check text-primary me-2"></i>Medical Documents Repository</h5>
+            <span class="badge bg-light text-dark border">{{ records.count }} Documents</span>
+        </div>
+        <div class="card-body p-0">
+            {% if records %}
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th>Document Title</th>
+                                {% if not user.is_patient %}
+                                    <th>Patient</th>
+                                {% endif %}
+                                <th>Category</th>
+                                <th>Test Date</th>
+                                <th>Uploaded By</th>
+                                <th>Size</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rec in records %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            {% if rec.is_pdf %}
+                                                <i class="fa-solid fa-file-pdf text-danger fs-4"></i>
+                                            {% elif rec.is_image %}
+                                                <i class="fa-solid fa-file-image text-primary fs-4"></i>
+                                            {% else %}
+                                                <i class="fa-solid fa-file-lines text-secondary fs-4"></i>
+                                            {% endif %}
+                                            <div>
+                                                <div class="fw-bold text-dark">{{ rec.title }}</div>
+                                                {% if rec.appointment %}
+                                                    <small class="text-muted">Associated with Appt #{{ rec.appointment.id }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% if not user.is_patient %}
+                                        <td>
+                                            <div class="fw-semibold text-dark">{{ rec.patient.get_full_name_or_username }}</div>
+                                            <small class="text-muted">{{ rec.patient.blood_group|default:"" }}</small>
+                                        </td>
+                                    {% endif %}
+                                    <td>
+                                        <span class="badge bg-light text-secondary border">{{ rec.get_record_type_display }}</span>
+                                    </td>
+                                    <td>{{ rec.record_date|date:"M d, Y" }}</td>
+                                    <td><small class="text-muted">{{ rec.uploaded_by.get_full_name_or_username }}</small></td>
+                                    <td><small class="text-muted">{{ rec.file_size_display }}</small></td>
+                                    <td class="text-end">
+                                        <a href="{% url 'records:detail' rec.id %}" class="btn btn-sm btn-light border" title="Inspect Record">
+                                            <i class="fa-regular fa-eye me-1"></i> View
+                                        </a>
+                                        <a href="{% url 'records:download' rec.id %}" class="btn btn-sm btn-primary ms-1" title="Download Encrypted File">
+                                            <i class="fa-solid fa-download"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fa-solid fa-folder-open fs-1 text-secondary mb-3"></i>
+                    <h6 class="fw-bold">No Medical Records Available</h6>
+                    <p class="small text-muted mb-3">No diagnostic reports or scans have been uploaded yet.</p>
+                    <a href="{% url 'records:upload' %}" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload First Document
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

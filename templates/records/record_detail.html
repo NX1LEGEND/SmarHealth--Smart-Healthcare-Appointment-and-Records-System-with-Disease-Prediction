@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ record.title }} | SmartHealth Medical Vault{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <a href="{% url 'records:list' %}" class="small text-muted text-decoration-none mb-1 d-inline-block">
+                &larr; Back to Medical Vault
+            </a>
+            <h3 class="fw-bold mb-0">{{ record.title }}</h3>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'records:download' record.id %}" class="btn btn-primary btn-sm px-3 shadow-sm">
+                <i class="fa-solid fa-download me-1"></i> Download File ({{ record.file_size_display }})
+            </a>
+            {% if user.is_hospital_admin or record.uploaded_by == user or record.patient == user %}
+                <form method="post" action="{% url 'records:delete' record.id %}" class="d-inline" onsubmit="return confirm('Permanently remove this medical file?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="fa-solid fa-trash-can me-1"></i> Delete
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Document Preview & Notes -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-file-lines text-primary me-2"></i>Document Preview</h5>
+
+                {% if record.is_pdf %}
+                    <div class="mb-4">
+                        <iframe src="{% url 'records:download' record.id %}?download=0" style="width: 100%; height: 600px; border: 1px solid #cbd5e1; border-radius: 8px;"></iframe>
+                    </div>
+                {% elif record.is_image %}
+                    <div class="text-center mb-4">
+                        <img src="{% url 'records:download' record.id %}?download=0" alt="{{ record.title }}" class="img-fluid rounded border shadow-sm" style="max-height: 550px;">
+                    </div>
+                {% else %}
+                    <div class="p-4 bg-light rounded-3 text-center my-4">
+                        <i class="fa-solid fa-file-lines fs-1 text-secondary mb-2"></i>
+                        <p class="mb-2">Preview not available for format: <b>{{ record.file_extension }}</b></p>
+                        <a href="{% url 'records:download' record.id %}" class="btn btn-primary btn-sm">Download to View File</a>
+                    </div>
+                {% endif %}
+
+                <h6 class="fw-bold text-dark mt-2 mb-2"><i class="fa-solid fa-clipboard text-secondary me-2"></i>Diagnostic Observations & Notes</h6>
+                <div class="p-3 bg-light rounded-3 text-secondary small">
+                    {{ record.notes|default:"No physician notes attached to this record."|linebreaksbr }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Metadata & RBAC Column -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-circle-info text-info me-2"></i>Record Metadata</h6>
+                
+                <ul class="list-group list-group-flush small">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Patient:</span>
+                        <span class="fw-bold text-dark">{{ record.patient.get_full_name_or_username }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Category:</span>
+                        <span class="badge bg-light text-secondary border">{{ record.get_record_type_display }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Conducted Date:</span>
+                        <span class="fw-semibold">{{ record.record_date|date:"F d, Y" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">File Size:</span>
+                        <span>{{ record.file_size_display }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Uploaded By:</span>
+                        <span>{{ record.uploaded_by.get_full_name_or_username }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span class="text-muted">Uploaded At:</span>
+                        <span>{{ record.created_at|date:"M d, Y H:i" }}</span>
+                    </li>
+                    {% if record.appointment %}
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Linked Consultation:</span>
+                            <a href="{% url 'appointments:detail' record.appointment.id %}">Appt #{{ record.appointment.id }}</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- RBAC Clearance Card -->
+            <div class="card shadow-sm border-success border-opacity-50 p-4 bg-success bg-opacity-10">
+                <div class="d-flex align-items-center gap-2 mb-2 text-success fw-bold">
+                    <i class="fa-solid fa-shield-check fs-5"></i>
+                    <span>RBAC Security Clearance Active</span>
+                </div>
+                <p class="small text-muted mb-0">
+                    Your authenticated session possesses verified permissions to inspect and download this record under hospital data privacy policy.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

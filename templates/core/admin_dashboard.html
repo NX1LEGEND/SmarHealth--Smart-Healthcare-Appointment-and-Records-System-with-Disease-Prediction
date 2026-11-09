@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hospital Administration & Analytics | SmartHealth{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Admin Header Banner -->
+    <div class="card border-0 shadow-sm p-4 mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border-radius: 16px;">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <span class="badge bg-danger mb-2 px-3 py-1 fw-semibold"><i class="fa-solid fa-hospital-user me-1"></i> Hospital Administration</span>
+                <h2 class="fw-bold mb-1">Executive Operations & Clinical Analytics</h2>
+                <p class="text-white text-opacity-75 mb-0 small">
+                    Overseeing hospital scheduling, doctor rosters, RBAC secure medical storage, and AI diagnostic predictive models.
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="/admin/" target="_blank" class="btn btn-outline-light fw-semibold px-3 shadow-sm">
+                    <i class="fa-solid fa-screwdriver-wrench me-1"></i> Django Admin Site
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- High Level Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-2 col-md-4 col-6">
+            <div class="stat-widget">
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ total_patients }}</h3>
+                    <div class="text-muted small">Registered Patients</div>
+                </div>
+                <div class="stat-icon primary">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-6">
+            <div class="stat-widget">
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ total_doctors }}</h3>
+                    <div class="text-muted small">Active Doctors</div>
+                </div>
+                <div class="stat-icon blue">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-6">
+            <div class="stat-widget">
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ total_appointments }}</h3>
+                    <div class="text-muted small">Total Bookings</div>
+                </div>
+                <div class="stat-icon warning">
+                    <i class="fa-regular fa-calendar-check"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-6">
+            <div class="stat-widget">
+                <div>
+                    <h3 class="fw-bold mb-0 text-dark">{{ total_records }}</h3>
+                    <div class="text-muted small">Encrypted Lab Records</div>
+                </div>
+                <div class="stat-icon success">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-12">
+            <div class="stat-widget">
+                <div>
+                    <h3 class="fw-bold mb-0 text-danger">{{ total_predictions }}</h3>
+                    <div class="text-muted small">AI Disease Risk Screenings</div>
+                </div>
+                <div class="stat-icon danger">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Charts Row -->
+    <div class="row g-4 mb-4">
+        <!-- Appointment Status Distribution -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold"><i class="fa-solid fa-chart-pie text-primary me-2"></i>Appointment Workflow Distribution</h6>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <div style="width: 260px; height: 260px;">
+                        <canvas id="appointmentStatusChart"></canvas>
+                    </div>
+                    <div class="d-flex justify-content-center gap-3 mt-3 small text-muted">
+                        <span><i class="fa-solid fa-circle text-primary me-1"></i>Confirmed ({{ status_counts.confirmed }})</span>
+                        <span><i class="fa-solid fa-circle text-warning me-1"></i>Pending ({{ status_counts.pending }})</span>
+                        <span><i class="fa-solid fa-circle text-success me-1"></i>Completed ({{ status_counts.completed }})</span>
+                        <span><i class="fa-solid fa-circle text-danger me-1"></i>Cancelled ({{ status_counts.cancelled }})</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Risk Distribution Bar Chart -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0 fw-bold"><i class="fa-solid fa-chart-column text-danger me-2"></i>AI Disease Risk Stratification</h6>
+                </div>
+                <div class="card-body">
+                    <div style="height: 280px;">
+                        <canvas id="diseaseRiskChart"></canvas>
+                    </div>
+                    <div class="text-center small text-muted mt-2">
+                        Comparing population risk categorization across Diabetes Mellitus and Cardiovascular models
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Doctors Roster -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-user-doctor text-primary me-2"></i>Medical Specialists Directory</h5>
+            <a href="{% url 'accounts:register_doctor' %}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-plus me-1"></i> Register New Doctor</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-custom align-middle">
+                    <thead>
+                        <tr>
+                            <th>Practitioner</th>
+                            <th>Department</th>
+                            <th>License & Experience</th>
+                            <th>OPD Fee</th>
+                            <th>Availability Status</th>
+                            <th class="text-end">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in doctors %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ doc.get_full_name_or_username }}</div>
+                                    <small class="text-muted">{{ doc.email }} | {{ doc.phone_number }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-primary border">{{ doc.doctor_profile.specialty }}</span>
+                                </td>
+                                <td>
+                                    <div>{{ doc.doctor_profile.qualification }}</div>
+                                    <small class="text-muted">License: {{ doc.doctor_profile.license_number }} ({{ doc.doctor_profile.experience_years }} yrs)</small>
+                                </td>
+                                <td><b>${{ doc.doctor_profile.consultation_fee }}</b></td>
+                                <td>
+                                    {% if doc.doctor_profile.is_available %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">Active & Accepting</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border">Unavailable</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'appointments:doctor_detail' doc.id %}" class="btn btn-sm btn-light border">Profile</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Global Appointments Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-clock-rotate-left text-secondary me-2"></i>Recent Hospital Consultations Activity</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-custom align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Attending Doctor</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Reminder</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appt in recent_appointments %}
+                            <tr>
+                                <td>#{{ appt.id }}</td>
+                                <td>
+                                    <div class="fw-bold">{{ appt.patient.get_full_name_or_username }}</div>
+                                </td>
+                                <td>
+                                    <div>{{ appt.doctor.get_full_name_or_username }}</div>
+                                    <small class="text-muted">{{ appt.doctor.doctor_profile.specialty }}</small>
+                                </td>
+                                <td>
+                                    <div>{{ appt.appointment_date|date:"M d, Y" }}</div>
+                                    <small class="text-muted">{{ appt.appointment_time|time:"g:i A" }}</small>
+                                </td>
+                                <td>
+                                    {% if appt.status == 'CONFIRMED' %}
+                                        <span class="badge badge-confirmed">Confirmed</span>
+                                    {% elif appt.status == 'PENDING' %}
+                                        <span class="badge badge-pending">Pending</span>
+                                    {% elif appt.status == 'COMPLETED' %}
+                                        <span class="badge badge-completed">Completed</span>
+                                    {% else %}
+                                        <span class="badge badge-cancelled">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if appt.reminder_sent %}
+                                        <span class="text-success small"><i class="fa-solid fa-check-double me-1"></i> Dispatched</span>
+                                    {% else %}
+                                        <span class="text-muted small"><i class="fa-solid fa-clock me-1"></i> Scheduled</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'appointments:detail' appt.id %}" class="btn btn-sm btn-outline-primary">Details</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Appointment Status Doughnut
+    const ctxAppt = document.getElementById('appointmentStatusChart').getContext('2d');
+    new Chart(ctxAppt, {
+        type: 'doughnut',
+        data: {
+            labels: ['Confirmed', 'Pending', 'Completed', 'Cancelled'],
+            datasets: [{
+                data: [
+                    {{ status_counts.confirmed|default:0 }},
+                    {{ status_counts.pending|default:0 }},
+                    {{ status_counts.completed|default:0 }},
+                    {{ status_counts.cancelled|default:0 }}
+                ],
+                backgroundColor: ['#2563eb', '#f59e0b', '#10b981', '#ef4444'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            cutout: '65%'
+        }
+    });
+
+    // 2. Disease Risk Bar Chart
+    const ctxRisk = document.getElementById('diseaseRiskChart').getContext('2d');
+    new Chart(ctxRisk, {
+        type: 'bar',
+        data: {
+            labels: ['Diabetes Mellitus', 'Cardiovascular Heart Disease'],
+            datasets: [
+                {
+                    label: 'High Risk',
+                    data: [{{ diabetes_stats.high|default:0 }}, {{ heart_stats.high|default:0 }}],
+                    backgroundColor: '#ef4444'
+                },
+                {
+                    label: 'Moderate Risk',
+                    data: [{{ diabetes_stats.mod|default:0 }}, {{ heart_stats.mod|default:0 }}],
+                    backgroundColor: '#f59e0b'
+                },
+                {
+                    label: 'Low Risk',
+                    data: [{{ diabetes_stats.low|default:0 }}, {{ heart_stats.low|default:0 }}],
+                    backgroundColor: '#10b981'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            },
+            plugins: {
+                legend: { position: 'top' }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

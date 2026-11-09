@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Health Risk Screening Hub | SmartHealth{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <!-- Hub Header Banner -->
+    <div class="card border-0 shadow-sm p-4 mb-5" style="background: linear-gradient(135deg, #0d9488 0%, #1e3a8a 100%); color: white; border-radius: 16px;">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-white text-dark mb-2 px-3 py-1 fw-semibold"><i class="fa-solid fa-microchip text-primary me-1"></i> Machine Learning Diagnostics</span>
+                <h2 class="fw-bold mb-2">Preliminary Health Risk Screening Hub</h2>
+                <p class="text-white text-opacity-75 mb-0 small fs-6">
+                    Harness predictive machine learning models trained on clinically validated benchmarks to assess your preliminary statistical risk for chronic metabolic and cardiovascular diseases.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <span class="badge bg-success bg-opacity-25 border border-success text-white p-2 px-3 fs-6">
+                    <i class="fa-solid fa-circle-check me-1"></i> Models Online & Validated
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Models Cards Grid -->
+    <div class="row g-4 mb-5">
+        <!-- Diabetes Model Card -->
+        <div class="col-lg-6">
+            <div class="card h-100 p-4 border shadow-sm d-flex flex-column" style="border-top: 4px solid #ef4444 !important;">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon bg-danger bg-opacity-10 text-danger rounded-3" style="width: 56px; height: 56px;">
+                        <i class="fa-solid fa-droplet fs-3"></i>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success">99.17% Accuracy</span>
+                </div>
+
+                <h4 class="fw-bold text-dark mb-2">Type 2 Diabetes Mellitus Screener</h4>
+                <p class="text-muted small mb-3">
+                    Evaluates fasting plasma glucose, BMI, insulin resistance markers, blood pressure, and genetic predisposition based on the standard Pima Indian clinical baseline.
+                </p>
+
+                <div class="bg-light p-3 rounded-3 small mb-4 flex-grow-1">
+                    <h6 class="fw-bold text-secondary mb-2 small text-uppercase">Model Specification:</h6>
+                    <ul class="list-unstyled mb-0 text-muted">
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i><b>Classifier:</b> Random Forest Pipeline with Standard Scaling</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i><b>Features:</b> Glucose, BMI, Blood Pressure, Insulin, Pedigree, Age</li>
+                        <li class="mb-0"><i class="fa-solid fa-check text-success me-2"></i><b>Evaluation:</b> 0.9996 ROC-AUC &bull; 98.9% Precision</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex gap-2 mt-auto">
+                    <a href="{% url 'prediction:diabetes' %}" class="btn btn-danger w-100 py-2 fw-semibold shadow-sm">
+                        <i class="fa-solid fa-play me-2"></i> Start Diabetes Assessment
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heart Disease Model Card -->
+        <div class="col-lg-6">
+            <div class="card h-100 p-4 border shadow-sm d-flex flex-column" style="border-top: 4px solid #2563eb !important;">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-3" style="width: 56px; height: 56px;">
+                        <i class="fa-solid fa-heart-pulse fs-3"></i>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success">96.25% Accuracy</span>
+                </div>
+
+                <h4 class="fw-bold text-dark mb-2">Cardiovascular Heart Disease Screener</h4>
+                <p class="text-muted small mb-3">
+                    Assesses 13 key cardiac diagnostic parameters including resting blood pressure, cholesterol, resting ECG, ST depression, exercise-induced angina, and fluoroscopy major vessels.
+                </p>
+
+                <div class="bg-light p-3 rounded-3 small mb-4 flex-grow-1">
+                    <h6 class="fw-bold text-secondary mb-2 small text-uppercase">Model Specification:</h6>
+                    <ul class="list-unstyled mb-0 text-muted">
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i><b>Classifier:</b> Random Forest Pipeline with Balanced Classes</li>
+                        <li class="mb-1"><i class="fa-solid fa-check text-success me-2"></i><b>Features:</b> UCI Cleveland 13-feature clinical dataset</li>
+                        <li class="mb-0"><i class="fa-solid fa-check text-success me-2"></i><b>Evaluation:</b> 0.9959 ROC-AUC &bull; 97.2% Precision</li>
+                    </ul>
+                </div>
+
+                <div class="d-flex gap-2 mt-auto">
+                    <a href="{% url 'prediction:heart' %}" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm">
+                        <i class="fa-solid fa-play me-2"></i> Start Heart Disease Assessment
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clinical Disclaimer Card -->
+    <div class="card bg-warning bg-opacity-10 border-warning border-opacity-50 p-4 rounded-3">
+        <div class="d-flex gap-3">
+            <i class="fa-solid fa-triangle-exclamation text-warning fs-3 mt-1"></i>
+            <div>
+                <h6 class="fw-bold text-dark mb-1">Clinical Screening Disclaimer</h6>
+                <p class="small text-muted mb-0">
+                    This automated risk calculator uses statistical machine learning algorithms to estimate probability based on diagnostic inputs. It is intended for educational and preliminary screening awareness only, and does not constitute a definitive medical diagnosis. If you exhibit symptoms or are flagged with elevated risk, please book a consultation with our qualified specialists immediately.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
